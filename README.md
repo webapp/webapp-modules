@@ -48,4 +48,6 @@ modules.transpilers["my-format"] = function(format, moduleName, source) {
 }
 ```
 
-#### LICENSE ####
+#### License ####
+
+MIT.
