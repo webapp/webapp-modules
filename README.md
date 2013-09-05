@@ -27,7 +27,7 @@ var app = connect();
 app.use(modules("src"));
 
 // Specify a specific source format.
-app.use("modules("src", "es6"));
+app.use(modules("src", "es6"));
 ```
 
 #### Consumable API ####
