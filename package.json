@@ -1,11 +1,12 @@
 {
   "name": "webapp-modules",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Various module formats, includes Connect middleware.",
   "main": "src/index.js",
   "license": "MIT",
   "dependencies": {
-    "es6-module-transpiler": "~0.2.0"
+    "es6-module-transpiler": "~0.2.0",
+    "esprima": "~1.0.4"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "~0.6.3",

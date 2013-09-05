@@ -1,5 +1,6 @@
 var fs = require("fs");
 var path = require("path");
+var esprima = require("esprima");
 
 // Connect middleware.
 var middleware = function(req, res, next) {
@@ -21,8 +22,10 @@ var middleware = function(req, res, next) {
     // Send back JavaScript.
     res.setHeader("Content-Type", "application/javascript");
 
+    var sourceFormat = options.sourceFormat || exports.detect(contents);
+
     // Return the transpiled output.
-    res.end(exports.transpile(options.sourceFormat, moduleName, contents).amd);
+    res.end(exports.transpile(sourceFormat, moduleName, contents).amd);
   });
 };
 
@@ -32,7 +35,7 @@ exports = module.exports = function(root, options) {
 
   // Set defaults.
   options.__proto__ = {
-    sourceFormat: "amd",
+    sourceFormat: null,
     sourceFolder: root
   };
 
@@ -43,9 +46,26 @@ exports = module.exports = function(root, options) {
 // Map transpilers to their type.
 var transpiler = exports.transpilers = {};
 
+// Attempt to detect different module types if the end user wasn't explicit.
+exports.detect = function(source) {
+  source = String(source);
+
+  // If the source fails, assume es6, who cares it's not valid anyways.
+  try { esprima.parse(source); } catch (ex) { return "es6"; }
+
+  // You shoudn't be using `define`, we can make this more robust later.
+  if (source.indexOf("define(") > -1) {
+    return "amd";
+  }
+
+  // Might as well be "cjs".
+  return "cjs";
+};
+
 // Locate the correct transpiler and process the contents.
-exports.transpile = function(format) {
-  var source = transpiler[format].apply(null, arguments);
+exports.transpile = function(format, moduleName, contents) {
+  var sourceFormat = format || exports.detect(contents);
+  var source = transpiler[sourceFormat].apply(null, arguments);
 
   // Remove erroneous pathing.
   source.amd = source.amd.replace(/\.\.\//g, "");
