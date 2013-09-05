@@ -1,7 +1,7 @@
 WebApp Modules
 --------------
 
-> convert modules, authored in various formats, to amd and cjs
+> library for transpiling various module formats; includes connect middleware
 
 How you decide to structure you web application is always up for debate.  This
 tool integrates with your Connect server as middleware and can be used
@@ -15,7 +15,20 @@ the source format to convert from for reliability.
 
 #### Connect middleware ####
 
+This will provide on-the-fly transpiling of your module to AMD.
 
+``` javascript
+var connect = require("connect");
+var modules = require("webapp-modules");
+
+var app = connect();
+
+// Specify the path to your source code.
+app.use(modules("src"));
+
+// Specify a specific source format.
+app.use("modules("src", "es6"));
+```
 
 #### Consumable API ####
 
@@ -28,7 +41,11 @@ var modules = require("webapp-modules");
 // Convert given source.
 var source = modules.transpile("cjs", "hiModule", "var hi = require('hi');");
 
-// 
+// Detect given source.
+var sourceFormat = modules.detect("define(function() { });");
+
+console.log(sourceFormat);
+// => "amd"
 ```
 
 #### Registering a custom transpiler ####
